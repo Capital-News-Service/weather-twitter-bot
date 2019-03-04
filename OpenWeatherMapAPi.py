@@ -6,14 +6,15 @@ import tweepy as twp
 import pandas as pd
 import numpy as np
 import json
-keys = {}
 
+########################### CONFIG ############################
+keys = {}
 with open("key.json","r") as f:
         keys = json.loads(f.read())
 #Consumer keys and access tokens, used for OAuth
-consumer_key = keys["consumer_key"]
+consumer_key =  keys["consumer_key"]
 consumer_secret = keys["consumer_secret"]
-access_token = keys["access_token"]
+access_token =  keys["access_token"]
 access_secret = keys["access_secret"]
 
 # OAuth process, using the keys and tokens
@@ -23,36 +24,37 @@ auth.set_access_token(access_token, access_secret)
 #Creation of the interface
 api = twp.API(auth)
 
-
-#Problem: after getting the maximum temperature of the five days, I have to reconstruct the humidity list along with the
-# heat index list since they are not all the same length. Use the dateTime list to find the right humidity and reconstruct that?
-
 #retrieve the data from the api
 owm = pyowm.OWM(keys["API_key"])
 fc = owm.three_hours_forecast('Baltimore')
 forecast = fc.get_forecast()
 weatherObj = forecast.get_weathers()
 
-tempList = []
-humidityList = []
-timeList = []
+########################### CODE ############################
 
 #store the data in the lists:
-for weather in weatherObj:
-    tempList.append(weather.get_temperature(unit='fahrenheit'))
-    humidityList.append(weather.get_humidity())
-    timeList.append(weather.get_reference_time('date'))
+def getData():
+    temperatureData = []
+    humidityData = []
+    timeData = []
+    for weather in weatherObj:
+        temperatureData.append(weather.get_temperature(unit='fahrenheit'))
+        humidityData.append(weather.get_humidity())
+        timeData.append(weather.get_reference_time('date'))
 
+    maxTemperatureData = []
+    for temp in temperatureData:
+        maxTemperatureData.append(math.ceil(temp['temp_max'] * 100 / 100))
 
+    return maxTemperatureData, humidityData, timeData
 
-
-#store the maximum temperature in a new list
-maxTemp = []
-for temp in tempList:
-    maxTemp.append(math.ceil(temp['temp_max'] * 100 / 100))
+#assign data to three list for future extraction
+tempoTempData = getData()[0]
+tempoHumidityData = getData()[1]
+tempoTimeData = getData()[2]
 
 #finding the maxTemperature of each day
-def maxTemperature(maxTemp, timeList):
+def getTempTimeData(maxTemp, timeList):
     minimum0 = 0
     minimum1 = 0
     minimum2 = 0
@@ -103,24 +105,36 @@ def maxTemperature(maxTemp, timeList):
                 maxT5.append(temp)
                 newDate5.append(time)
                 minimum5 = temp
-    outputTemp = maxT + maxT2 + maxT3 + maxT3 + maxT5
+    outputTemp = maxT + maxT1+ maxT2 + maxT3 + maxT4 + maxT5
     outputDate = newDate0 + newDate1 + newDate2 + newDate3 + newDate4 + newDate5
     return  outputTemp,outputDate
 
+#Obtain the highest humidity of the day with the highest temperature
+def getHumidity(humidityData, timeFinalData, timeTempoData):
+    listHumidity = zip(humidityData,timeTempoData)
+    humidityList = []
+    for humidity,timeTempo in listHumidity:
+        for time in timeFinalData:
+            if(time == timeTempo):
+                humidityList.append(humidity)
 
+    return humidityList
 
-#construct the time list in String format
-dayList = []
-for day in timeList:
-    newDay = day.strftime('%A, %B %d, %H:%m %p')
-    dayList.append(newDay)
+#assign the data to final lists of temperature, time and humidity data
+temperatureFinalData = getTempTimeData(tempoTempData, tempoTimeData)[0]
+timeFinalData = getTempTimeData(tempoTempData, tempoTimeData)[1]
+humidityFinalData = getHumidity(tempoHumidityData, timeFinalData, tempoTimeData)
 
-day = maxTemperature(maxTemp, timeList)[1]
+#Format time Object into String
+def dayInString(timeFinalData):
+    dayString = []
+    for day in timeFinalData:
+        newDay = day.strftime('%A, %B %d, %H:%M %p')
+        dayString.append(newDay)
+    return dayString
 
-#get the maximum humidity
-#def getMaxHumidity(day, dayTime):
-
-
+#Reassign time in String to timeFinalData list
+timeFinalData = dayInString(timeFinalData)
 
 #the formula is calculated first
 def simpleHeatIndex(temperature, humidity):
@@ -152,49 +166,51 @@ def recommendation(heatIndex):
     if 80 <= heatIndex < 90:
         return "Caution: Fatigue possible with prolonged exposure and/or physical activity"
     elif 90 <= heatIndex < 103:
-        return  "Extreme Caution: Heat stroke, heat cramps, or heat exhaustion possible with problonged exposure and/or physical activity"
+        return "Extreme Caution: Heat stroke, heat cramps, or heat exhaustion possible with problonged exposure and/or physical activity"
     elif 103 <= heatIndex <= 124:
         return "Danger: Heat cramps or heat exhaustion likely, and heat stroke possible with prolonged exposure and/or physical activity"
     elif 125 <= heatIndex:
-        return  "Extreme Danger: Heat stroke highly likely"
+        return "Extreme Danger: Heat stroke highly likely"
 
+#Calculate the heat data using the temperature data and humidity data
+#return heat indexes as a list
+def getHeatData(temperatureFinalData, humidityFinalData):
+    maxTemp = np.array(temperatureFinalData)
+    humidityList = np.array(humidityFinalData)
+    heatIndex = []
+    for temperature, humidity in zip(maxTemp, humidityList):
+       heatIndex.append(simpleHeatIndex(temperature,humidity))
 
-maxTemp = np.array(maxTemp)
-humidity = np.array(humidityList)
-heatIndex = []
-for temperature, humidity in zip(maxTemp, humidityList):
-    heatIndex.append(simpleHeatIndex(temperature,humidity))
+    heatIndex = np.array(heatIndex).tolist()
+    return heatIndex
 
-heatIndex = np.array(heatIndex).tolist()
+#Obtain the heat data
+heatFinalData = getHeatData(temperatureFinalData,humidityFinalData)
 
-
-
-#turn the list into data frame
-table = pd.DataFrame({'Temperature' : maxTemp})
-table['Humidity'] = humidityList
-table['Time'] = dayList
-table['Heat Index'] = heatIndex
 
 #store the tweet for the next five days
-tweetList = []
-index = len(table)
-i = 0
-while i < index:
-    dict = table.iloc[i].to_dict()
-    tweet = 'On ' + dict['Time'] + ' ,the heat index is ' + str(dict['Heat Index']) + ' .The temperature reaches ' + \
-            str(dict['Temperature']) + ' with humidity up to ' + str(dict['Humidity']) + ' percent.'
-    tweetList.append(tweet)
-    i += 1
+#turn the data into data frame and return a list of String for the tweet.
+def getTweet():
+    table = pd.DataFrame({'Temperature': temperatureFinalData})
+    table['Humidity'] = humidityFinalData
+    table['Time'] = timeFinalData
+    table['Heat Index'] = heatFinalData
+    tweetList = []
+    index = len(table)
+    i = 0
+    while i < index:
+        dict = table.iloc[i].to_dict()
+        tweet = 'On ' + dict['Time'] + ' ,the heat index is ' + str(dict['Heat Index']) + ' .The temperature reaches ' + \
+                str(dict['Temperature']) + ' with humidity up to ' + str(dict['Humidity']) + ' percent.'
+        tweetList.append(tweet)
+        i += 1
 
+    return tweetList
 
+#Run the bot
+def runBot():
+    tweetOut = ''.join(getTweet()[0])
+    # Tweet the list of data
+    api.update_status(tweetOut)
 
-
-
-
-tweetOut = ''.join(tweetList[0])
-#Tweet the list of data
-#api.update_status(tweetOut)
-
-
-
-
+#runBot()
