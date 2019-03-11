@@ -6,6 +6,7 @@ import tweepy as twp
 import pandas as pd
 import numpy as np
 import json
+import matplotlib.pyplot as plt
 
 ########################### CONFIG ############################
 keys = {}
@@ -48,20 +49,17 @@ def getData():
 
     return maxTemperatureData, humidityData, timeData
 
-#assign data to three list for future extraction
-tempoTempData = getData()[0]
-tempoHumidityData = getData()[1]
-tempoTimeData = getData()[2]
-
 #finding the maxTemperature of each day
-def getTempTimeData(maxTemp, timeList):
+def getTempTimeData():
+    tempoTempData = getData()[0]
+    tempoTimeData = getData()[2]
     minimum0 = 0
     minimum1 = 0
     minimum2 = 0
     minimum3 = 0
     minimum4 = 0
     minimum5 = 0
-    listTempTime = zip(maxTemp, timeList)
+    listTempTime = zip(tempoTempData, tempoTimeData)
     for temp, time in listTempTime:
         if time.date() == datetime.today().date():
             if(temp > minimum0):
@@ -110,8 +108,11 @@ def getTempTimeData(maxTemp, timeList):
     return  outputTemp,outputDate
 
 #Obtain the highest humidity of the day with the highest temperature
-def getHumidity(humidityData, timeFinalData, timeTempoData):
-    listHumidity = zip(humidityData,timeTempoData)
+def getHumidity():
+    tempoHumidityData = getData()[1]
+    timeFinalData = getTempTimeData()[1]
+    tempoTimeData = getData()[2]
+    listHumidity = zip(tempoHumidityData,tempoTimeData)
     humidityList = []
     for humidity,timeTempo in listHumidity:
         for time in timeFinalData:
@@ -120,21 +121,14 @@ def getHumidity(humidityData, timeFinalData, timeTempoData):
 
     return humidityList
 
-#assign the data to final lists of temperature, time and humidity data
-temperatureFinalData = getTempTimeData(tempoTempData, tempoTimeData)[0]
-timeFinalData = getTempTimeData(tempoTempData, tempoTimeData)[1]
-humidityFinalData = getHumidity(tempoHumidityData, timeFinalData, tempoTimeData)
-
 #Format time Object into String
-def dayInString(timeFinalData):
+def dayInString():
+    timeFinalData = getTempTimeData()[1]
     dayString = []
     for day in timeFinalData:
         newDay = day.strftime('%A, %B %d, %H:%M %p')
         dayString.append(newDay)
     return dayString
-
-#Reassign time in String to timeFinalData list
-timeFinalData = dayInString(timeFinalData)
 
 #the formula is calculated first
 def simpleHeatIndex(temperature, humidity):
@@ -160,6 +154,8 @@ def fullHeatIndex(temperature, humidity):
 def finalHeatIndex(temperature, humidity):
     if simpleHeatIndex(temperature,humidity) >= 80:
         return fullHeatIndex(temperature, humidity)
+    else:
+        return simpleHeatIndex(temperature,humidity)
 
 #determine the recommendation
 def recommendation(heatIndex):
@@ -179,18 +175,22 @@ def getHeatData(temperatureFinalData, humidityFinalData):
     humidityList = np.array(humidityFinalData)
     heatIndex = []
     for temperature, humidity in zip(maxTemp, humidityList):
-       heatIndex.append(simpleHeatIndex(temperature,humidity))
+       heatIndex.append(finalHeatIndex(temperature,humidity))
 
     heatIndex = np.array(heatIndex).tolist()
     return heatIndex
 
 #Obtain the heat data
-heatFinalData = getHeatData(temperatureFinalData,humidityFinalData)
+#heatFinalData = getHeatData(temperatureFinalData,humidityFinalData)
 
 
 #store the tweet for the next five days
 #turn the data into data frame and return a list of String for the tweet.
 def getTweet():
+    temperatureFinalData = getTempTimeData()[0]
+    humidityFinalData = getHumidity()
+    timeFinalData = dayInString()
+    heatFinalData = getHeatData(temperatureFinalData, humidityFinalData)
     table = pd.DataFrame({'Temperature': temperatureFinalData})
     table['Humidity'] = humidityFinalData
     table['Time'] = timeFinalData
@@ -214,3 +214,45 @@ def runBot():
     api.update_status(tweetOut)
 
 #runBot()
+#https://twitter.com/HeatBaltimore
+#At certain time, it will feel the hottest with temperature x and humidity is y
+#make things in matplotlib
+#worst day last summer
+
+
+def cautionFunction(x):
+   #cautionTemp = [80, 82, 84, 86, 88]
+    slope = (88-80)/(45-100)
+    intercept = 95;
+    return slope * x + intercept
+
+def extremeCautionFunction(x):
+    slope = (96-84)/(40-100)
+    return slope * x + 103
+
+def DangerFunction(x):
+    slope = (106-88)/(40-100)
+    return slope * x +116
+
+def extremeDangerFunction(x):
+    slope = (110-90) / (40-100)
+    return slope * x + 123
+
+cautionHumidity = [100, 85, 70, 55, 45]
+extremeCaution = [100,85,70,65,55,50,40]
+Danger = [100,90,80,75,65,60,55,50,45,40]
+extremeDanger = [100,90,85,75,70,65,60,55,50,45,40]
+x = np.array(cautionHumidity)
+y = cautionFunction(x)
+plt.plot(x,y)
+x2 = np.array(extremeCaution)
+y2 = extremeCautionFunction(x2)
+plt.plot(x2,y2)
+x3 = np.array(Danger)
+y3 = DangerFunction(x3)
+plt.plot(x3,y3)
+x4 = np.array(extremeDanger)
+y4 = extremeDangerFunction(x4)
+plt.plot(x4,y4)
+plt.show()
+
