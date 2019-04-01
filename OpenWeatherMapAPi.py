@@ -7,6 +7,8 @@ import pandas as pd
 import numpy as np
 import json
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+from matplotlib import colors
 
 ########################### CONFIG ############################
 keys = {}
@@ -132,19 +134,19 @@ def dayInString():
 
 #the formula is calculated first
 def simpleHeatIndex(temperature, humidity):
-    answer = 0.5 * (temperature + 61.0 + [(temperature - 68.0) * 1.2] + (humidity * 0.094))
+    answer = 0.5 * (temperature + 61.0 + ((temperature - 68.0) * 1.2) + (humidity * 0.094))
     return math.ceil(answer * 100 / 100)
 
 #the heat index is then compared. If it is 80 or higher, the full formula is applied
 def fullHeatIndex(temperature, humidity):
-    heatIndex = -42.379 + 2.04901523 * temperature + 10.1433127 * humidity - 0.22475541 * temperature * humidity
-    - 0.00683783 * temperature * temperature - 0.05481717 * humidity * humidity + 0.00085282 * temperature * humidity * \
-    humidity - 0.00000199 * temperature * temperature * humidity * humidity
+    heatIndex = -42.379 + 2.04901523 * temperature + 10.14333127 * humidity - .22475541 * temperature * humidity - .00683783 * temperature * temperature - \
+         .05481717 * humidity * humidity + .00122874 * temperature * temperature * humidity + .00085282 * temperature * humidity * humidity - \
+         .00000199 * temperature * temperature * humidity * humidity
 
-    if temperature > 80 and temperature < 112 and humidity < 13:
+    if temperature > 80 and temperature < 112 and humidity < 0.13:
         subtractionheat = ((13 - humidity)/4) * math.sqrt((17 - abs(temperature - 95)) / 17)
         return heatIndex - subtractionheat
-    elif humidity > 85 and temperature > 80 and temperature < 87:
+    elif humidity > 0.85 and temperature > 80 and temperature < 87:
         additionheat = ((humidity - 85) / 10) * ((87 - temperature ) / 5)
         return heatIndex + additionheat
     else:
@@ -205,7 +207,7 @@ def getTweet():
         tweetList.append(tweet)
         i += 1
 
-    return tweetList
+    return tweetList, table.iloc[0]
 
 #Run the bot
 def runBot():
@@ -219,40 +221,74 @@ def runBot():
 #make things in matplotlib
 #worst day last summer
 
+def getMaxTempandHumidity():
+    dict = getTweet()[1].to_dict()
+    return dict['Temperature'],dict['Humidity']
 
-def cautionFunction(x):
-   #cautionTemp = [80, 82, 84, 86, 88]
-    slope = (88-80)/(45-100)
-    intercept = 95;
-    return slope * x + intercept
+RH = [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+      45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45,
+      50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+      55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55,
+      60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+      65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
+      70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70 ,70 ,70 ,70 ,70,
+      75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75,
+      80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
+      85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85,
+      90, 90, 90 ,90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
+      95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95,
+      100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
 
-def extremeCautionFunction(x):
-    slope = (96-84)/(40-100)
-    return slope * x + 103
+RH.sort(reverse = True)
 
-def DangerFunction(x):
-    slope = (106-88)/(40-100)
-    return slope * x +116
+T = [80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110]
 
-def extremeDangerFunction(x):
-    slope = (110-90) / (40-100)
-    return slope * x + 123
 
-cautionHumidity = [100, 85, 70, 55, 45]
-extremeCaution = [100,85,70,65,55,50,40]
-Danger = [100,90,80,75,65,60,55,50,45,40]
-extremeDanger = [100,90,85,75,70,65,60,55,50,45,40]
-x = np.array(cautionHumidity)
-y = cautionFunction(x)
-plt.plot(x,y)
-x2 = np.array(extremeCaution)
-y2 = extremeCautionFunction(x2)
-plt.plot(x2,y2)
-x3 = np.array(Danger)
-y3 = DangerFunction(x3)
-plt.plot(x3,y3)
-x4 = np.array(extremeDanger)
-y4 = extremeDangerFunction(x4)
-plt.plot(x4,y4)
+HI = [87, 95, 103, 112, 121, 132, 143, 155, 168, 181, 195, 210, 226, 243, 260, 278,
+      86, 93, 100, 108, 117, 127, 137, 148, 160, 172, 185, 199, 214, 229, 245, 262,
+      86, 91, 98, 105, 113, 122, 131, 141, 152, 164, 176, 189, 202, 216, 231, 247,
+      85, 90, 96, 102, 110, 117, 126, 135, 145, 155, 167, 179, 191, 204, 218, 233,
+      84, 89, 94, 100, 106, 113, 121, 129, 138, 148, 158, 169, 181, 193, 205, 219,
+      84, 88, 92, 97, 103, 109, 116, 124, 132, 141, 150, 160, 171, 182, 193, 206,
+      83, 86, 90, 95, 100, 105, 112, 119, 126, 134, 143, 152, 161, 172, 182, 194,
+      82, 85, 89, 93, 98, 103, 108, 114, 121, 128, 136, 144, 153, 162, 172, 182,
+      82, 84, 88, 91, 95, 100, 105, 110, 116, 123, 129, 137, 145, 153, 162, 171,
+      81, 84, 88, 89, 93, 97, 101, 106, 112, 117, 124, 130, 137, 145, 153, 161,
+      81, 83, 85, 88, 91, 95, 99, 103, 108, 113, 118, 124, 131, 137, 144, 152,
+      80, 82, 84, 87, 89, 93, 96, 100, 104, 109, 114, 119, 124, 130, 137, 143,
+      80, 81, 83 ,85 ,88 ,91 ,94 ,97 ,101 ,105 ,109 ,114 ,119 ,124 ,130 ,136]
+
+table = pd.DataFrame({"Relative Humidity": RH})
+table["Temperature"] = T
+table ["Heat Index"] = HI
+table_matrix = table.pivot("Relative Humidity", "Temperature", "Heat Index")
+#print(table_matrix)
+
+
+fig = plt.figure()
+fig, ax = plt.subplots(1,1, figsize=(6,6))
+heatplot = ax.imshow(table_matrix, cmap='BuPu')
+ax.set_xticklabels(table_matrix.columns)
+ax.set_yticklabels(table_matrix.index)
+
+tick_spacing = 1
+ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+ax.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+ax.set_title("Heat Index Chart")
+ax.set_xlabel('Temperature(F)')
+ax.set_ylabel('Relative Humidity(%)')
+cmap = colors.ListedColormap(['gold','orange','darkorange','red'])
 plt.show()
 
