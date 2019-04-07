@@ -270,25 +270,46 @@ HI = [87, 95, 103, 112, 121, 132, 143, 155, 168, 181, 195, 210, 226, 243, 260, 2
       80, 82, 84, 87, 89, 93, 96, 100, 104, 109, 114, 119, 124, 130, 137, 143,
       80, 81, 83 ,85 ,88 ,91 ,94 ,97 ,101 ,105 ,109 ,114 ,119 ,124 ,130 ,136]
 
+CL = ['G', 'GR', 'GR', 'O', 'O', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
+      'G', 'GR', 'GR', 'O', 'O', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
+      'G', 'GR', 'GR', 'O', 'O', 'O', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
+      'G', 'G', 'GR', 'GR', 'O', 'O', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
+      'G', 'G', 'GR', 'GR', 'O', 'O', 'O', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
+      'G', 'G', 'GR', 'GR', 'O', 'O', 'O', 'O', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
+      'G', 'G', 'G', 'GR', 'GR', 'O', 'O', 'O', 'R', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
+      'G', 'G', 'G', 'GR', 'GR', 'GR', 'O', 'O', 'O', 'R', 'R', 'R', 'R', 'R', 'R', 'R',
+      'G', 'G', 'G', 'GR', 'GR', 'GR', 'O', 'O', 'O', 'O', 'R', 'R', 'R', 'R', 'R', 'R',
+      'G', 'G', 'G', 'G', 'GR', 'GR', 'GR', 'O', 'O', 'O', 'O', 'R', 'R', 'R', 'R', 'R',
+      'G', 'G', 'G', 'G', 'GR', 'GR', 'GR', 'GR', 'O', 'O', 'O', 'O', 'R', 'R', 'R', 'R',
+      'G', 'G', 'G', 'G', 'G', 'GR', 'GR', 'GR', 'O', 'O', 'O', 'O', 'O', 'R', 'R', 'R',
+      'G', 'G', 'G', 'G', 'G', 'GR', 'GR', 'GR', 'GR', 'O', 'O', 'O', 'O', 'O', 'R', 'R']
+
+
+
 table = pd.DataFrame({"Relative Humidity": RH})
 table["Temperature"] = T
 table ["Heat Index"] = HI
+table['Color'] = CL
 table_matrix = table.pivot("Relative Humidity", "Temperature", "Heat Index")
-#print(table_matrix)
 
+cmap = colors.ListedColormap(['gold', 'goldenrod', 'orange', 'red'])
+bounds = [80, 90, 103, 124, 278]
+norm = colors.BoundaryNorm(bounds, cmap.N)
 
 fig = plt.figure()
-fig, ax = plt.subplots(1,1, figsize=(6,6))
-heatplot = ax.imshow(table_matrix, cmap='BuPu')
+fig, ax = plt.subplots(1,1, figsize=(8,8))
+
+#heatplot = ax.imshow(table_matrix, cmap='BuPu')
+heatplot = ax.imshow(table_matrix, cmap= cmap, norm = norm) #make the heatmap
+fig.colorbar(heatplot, ticks = [90,103,124,278]) #colorbar
+
 ax.set_xticklabels(table_matrix.columns)
 ax.set_yticklabels(table_matrix.index)
-
 tick_spacing = 1
 ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
 ax.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
 ax.set_title("Heat Index Chart")
 ax.set_xlabel('Temperature(F)')
 ax.set_ylabel('Relative Humidity(%)')
-cmap = colors.ListedColormap(['gold','orange','darkorange','red'])
 plt.show()
 
