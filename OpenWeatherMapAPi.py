@@ -272,19 +272,24 @@ HI = [87, 95, 103, 112, 121, 132, 143, 155, 168, 181, 195, 210, 226, 243, 260, 2
       80, 82, 84, 87, 89, 93, 96, 100, 104, 109, 114, 119, 124, 130, 137, 143,
       80, 81, 83 ,85 ,88 ,91 ,94 ,97 ,101 ,105 ,109 ,114 ,119 ,124 ,130 ,136]
 
+#turn the data into a table
 table = pd.DataFrame({"Relative Humidity": RH})
 table["Temperature"] = T
 table ["Heat Index"] = HI
 table_matrix = table.pivot("Relative Humidity", "Temperature", "Heat Index")
 
+#set up the color ranges
 cmap = colors.ListedColormap(['gold', 'goldenrod', 'orange', 'red'])
 bounds = [80, 90, 103, 124, 278]
 norm = colors.BoundaryNorm(bounds, cmap.N)
+
+#set up the heat map
 fig = plt.figure()
 fig, ax = plt.subplots(1,1, figsize=(8,8))
-#heatplot = ax.imshow(table_matrix, cmap='BuPu')
-heatplot = ax.imshow(table_matrix, cmap= cmap, norm = norm) #make the heatmap
-fig.colorbar(heatplot, orientation = "horizontal", ticks = [80,90,103,124,278]) #colorbar
+
+#Plot points and heatmap
+heatplot = ax.imshow(table_matrix, cmap= cmap, norm = norm) #make the heatmap)
+heatplot = ax.plot(45,80, label = '*', color = 'black')
 
 #set up the axis
 ax.set_xticklabels(table_matrix.columns)
@@ -296,11 +301,14 @@ ax.set_title("Heat Index Chart")
 ax.set_xlabel('Temperature(F)')
 ax.set_ylabel('Relative Humidity(%)')
 ax.xaxis.tick_top()
+
+#Set up the labeling colors
 gold_patch = mpatches.Patch(color='gold', label='Caution')
 goldenrod_patch = mpatches.Patch(color='goldenrod', label='Extreme Caution')
 orange_patch = mpatches.Patch(color = 'orange', label = 'Danger')
 red_patch = mpatches.Patch(color = 'red', label = 'Extreme Danger')
 plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch], loc='upper center', bbox_to_anchor=(0.5, -0.05),
           fancybox=True, shadow=True, ncol=5)
+
 plt.show()
 
