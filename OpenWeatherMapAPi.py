@@ -309,6 +309,6 @@ orange_patch = mpatches.Patch(color = 'orange', label = 'Danger')
 red_patch = mpatches.Patch(color = 'red', label = 'Extreme Danger')
 plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch], loc='upper center', bbox_to_anchor=(0.5, -0.05),
           fancybox=True, shadow=True, ncol=5)
-
+#show the heatmap 
 plt.show()
 
