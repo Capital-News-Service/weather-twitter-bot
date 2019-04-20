@@ -227,123 +227,132 @@ def getMaxTempandHumidity():
     dict = getTweet()[1].to_dict()
     return dict['Temperature'],dict['Humidity']
 
-RH = [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
-      45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45,
-      50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
-      55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55,
-      60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
-      65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
-      70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70 ,70 ,70 ,70 ,70,
-      75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75,
-      80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
-      85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85,
-      90, 90, 90 ,90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
-      95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95,
-      100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
+def getIndex(humidity, temperature, table_matrix):
+        xIndex = 0
+        yIndex = 0
+        counterX = 0
+        counterY = 0
+        for temperatureInTable in table_matrix.columns:
+            if temperature == temperatureInTable:
+                xIndex = counterX
+            counterX += 1
 
-RH.sort(reverse = True)
+        for humidityInTable in table_matrix.index:
+            if humidity == humidityInTable:
+                yIndex = counterY
+            counterY += 1
 
-T = [80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
-     80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110]
+        if yIndex != 0:
+            yIndex = yIndex - 1
 
+        if xIndex != 0:
+            xIndex = xIndex - 1
 
-HI = [87, 95, 103, 112, 121, 132, 143, 155, 168, 181, 195, 210, 226, 243, 260, 278,
-      86, 93, 100, 108, 117, 127, 137, 148, 160, 172, 185, 199, 214, 229, 245, 262,
-      86, 91, 98, 105, 113, 122, 131, 141, 152, 164, 176, 189, 202, 216, 231, 247,
-      85, 90, 96, 102, 110, 117, 126, 135, 145, 155, 167, 179, 191, 204, 218, 233,
-      84, 89, 94, 100, 106, 113, 121, 129, 138, 148, 158, 169, 181, 193, 205, 219,
-      84, 88, 92, 97, 103, 109, 116, 124, 132, 141, 150, 160, 171, 182, 193, 206,
-      83, 86, 90, 95, 100, 105, 112, 119, 126, 134, 143, 152, 161, 172, 182, 194,
-      82, 85, 89, 93, 98, 103, 108, 114, 121, 128, 136, 144, 153, 162, 172, 182,
-      82, 84, 88, 91, 95, 100, 105, 110, 116, 123, 129, 137, 145, 153, 162, 171,
-      81, 84, 88, 89, 93, 97, 101, 106, 112, 117, 124, 130, 137, 145, 153, 161,
-      81, 83, 85, 88, 91, 95, 99, 103, 108, 113, 118, 124, 131, 137, 144, 152,
-      80, 82, 84, 87, 89, 93, 96, 100, 104, 109, 114, 119, 124, 130, 137, 143,
-      80, 81, 83 ,85 ,88 ,91 ,94 ,97 ,101 ,105 ,109 ,114 ,119 ,124 ,130 ,136]
+        return xIndex, yIndex
 
+#Function to construct the heat map and plot today's index
+def runGraph():
 
+    #Relative Humidity
+    RH = [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
+          45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45,
+          50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
+          55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55, 55,
+          60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60, 60,
+          65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65,
+          70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70, 70,
+          75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75, 75,
+          80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80,
+          85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85, 85,
+          90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90, 90,
+          95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95, 95,
+          100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100]
 
-#turn the data into a table
-table = pd.DataFrame({"Relative Humidity": RH})
-table["Temperature"] = T
-table ["Heat Index"] = HI
-table_matrix = table.pivot("Relative Humidity", "Temperature", "Heat Index")
+    RH.sort(reverse=True)
 
-def getIndex(humidity , temperature , table_matrix):
-    xIndex = 0
-    yIndex = 0
-    counterX = 0
-    counterY = 0
-    for temperatureInTable in table_matrix.columns:
-        if temperature == temperatureInTable:
-            xIndex = counterX
-        counterX += 1
+    #Temperature in F
+    T = [80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
+         80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110]
 
-    for humidityInTable in table_matrix.index:
-        if humidity == humidityInTable:
-            yIndex = counterY
-        counterY += 1
+    #Heat Index
+    HI = [87, 95, 103, 112, 121, 132, 143, 155, 168, 181, 195, 210, 226, 243, 260, 278,
+          86, 93, 100, 108, 117, 127, 137, 148, 160, 172, 185, 199, 214, 229, 245, 262,
+          86, 91, 98, 105, 113, 122, 131, 141, 152, 164, 176, 189, 202, 216, 231, 247,
+          85, 90, 96, 102, 110, 117, 126, 135, 145, 155, 167, 179, 191, 204, 218, 233,
+          84, 89, 94, 100, 106, 113, 121, 129, 138, 148, 158, 169, 181, 193, 205, 219,
+          84, 88, 92, 97, 103, 109, 116, 124, 132, 141, 150, 160, 171, 182, 193, 206,
+          83, 86, 90, 95, 100, 105, 112, 119, 126, 134, 143, 152, 161, 172, 182, 194,
+          82, 85, 89, 93, 98, 103, 108, 114, 121, 128, 136, 144, 153, 162, 172, 182,
+          82, 84, 88, 91, 95, 100, 105, 110, 116, 123, 129, 137, 145, 153, 162, 171,
+          81, 84, 88, 89, 93, 97, 101, 106, 112, 117, 124, 130, 137, 145, 153, 161,
+          81, 83, 85, 88, 91, 95, 99, 103, 108, 113, 118, 124, 131, 137, 144, 152,
+          80, 82, 84, 87, 89, 93, 96, 100, 104, 109, 114, 119, 124, 130, 137, 143,
+          80, 81, 83, 85, 88, 91, 94, 97, 101, 105, 109, 114, 119, 124, 130, 136]
 
-    if xIndex > 0:
-        xIndex - 1
+    #Turn the data into a table
+    table = pd.DataFrame({"Relative Humidity": RH})
+    table["Temperature"] = T
+    table["Heat Index"] = HI
 
-    if yIndex > 0:
-        xIndex - 1
+    #Turn the data into matrix
+    table_matrix = table.pivot("Relative Humidity", "Temperature", "Heat Index")
 
-    return xIndex,yIndex
+    #data for testing with plotting Today's Index
+    temperatureTest = 84
+    humidityTest = 45
 
-temperatureTest = 84
-humidityTest = 45
-
-xIndex = getIndex(humidityTest,temperatureTest,table_matrix)[0] - 1
-yIndex = getIndex(humidityTest,temperatureTest, table_matrix)[1] - 1
-
-
-#set up the color ranges
-cmap = colors.ListedColormap(['gold', 'goldenrod', 'orange', 'red'])
-bounds = [80, 90, 103, 124, 278]
-norm = colors.BoundaryNorm(bounds, cmap.N)
-
-#set up the heat map
-fig = plt.figure()
-fig, ax = plt.subplots(1,1, figsize=(8,8))
-
-#Plot points and heatmap
-heatplot = ax.imshow(table_matrix, cmap= cmap, norm = norm) #make the heatmap
-heatplot = ax.scatter(xIndex,yIndex, marker = 'o', c = 'black', linewidth = 7)
+    #Calculate where to plot the point
+    xIndex = getIndex(humidityTest, temperatureTest, table_matrix)[0]
+    yIndex = getIndex(humidityTest, temperatureTest, table_matrix)[1]
 
 
-#set up the axis
-ax.set_xticklabels(table_matrix.columns)
-ax.set_yticklabels(table_matrix.index)
-tick_spacing = 1
-ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
-ax.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
-ax.set_title("Heat Index Chart")
-ax.set_xlabel('Temperature(F)')
-ax.set_ylabel('Relative Humidity(%)')
-ax.xaxis.tick_top()
+    # set up the color ranges
+    cmap = colors.ListedColormap(['gold', 'goldenrod', 'orange', 'red'])
+    bounds = [80, 90, 103, 124, 278]
+    norm = colors.BoundaryNorm(bounds, cmap.N)
 
-#Set up the labeling colors
-gold_patch = mpatches.Patch(color='gold', label='Caution')
-goldenrod_patch = mpatches.Patch(color='goldenrod', label='Extreme Caution')
-orange_patch = mpatches.Patch(color = 'orange', label = 'Danger')
-red_patch = mpatches.Patch(color = 'red', label = 'Extreme Danger')
-point_patch = mpatches.Patch(color = 'black', label = 'Today Index')
-plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch,point_patch], loc='upper center',
-           bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+    # set up the heat map
+    plt.figure()
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
 
-#show the heatmap
-plt.show()
+    # Plot points and heatmap
+    ax.imshow(table_matrix, cmap=cmap, norm=norm)  # make the heatmap
+    ax.scatter(xIndex, yIndex, marker='o', c='black', linewidth=7)
 
+    # set up the axis and title
+    ax.set_xticklabels(table_matrix.columns)
+    ax.set_yticklabels(table_matrix.index)
+    tick_spacing = 1
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+    ax.set_title("Heat Index Chart", loc = 'left')
+    ax.set_xlabel('Temperature (F)', fontsize = 14)
+    ax.xaxis.set_label_position('top')
+    ax.set_ylabel('Relative Humidity (%)', fontsize = 14)
+    ax.xaxis.tick_top()
+
+    # Set up the labeling colors and legend
+    gold_patch = mpatches.Patch(color='gold', label='Caution')
+    goldenrod_patch = mpatches.Patch(color='goldenrod', label='Extreme Caution')
+    orange_patch = mpatches.Patch(color='orange', label='Danger')
+    red_patch = mpatches.Patch(color='red', label='Extreme Danger')
+    point_patch = mpatches.Patch(color='black', label='Today Index')
+    plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch, point_patch], loc='upper center',
+               bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5,
+               title = 'Likelihood of Heat Disorders with Prolonged Exposure or Strenous Activity')
+
+    # show the heatmap
+    plt.show()
+
+runGraph()
