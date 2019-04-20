@@ -295,10 +295,16 @@ def getIndex(humidity , temperature , table_matrix):
             yIndex = counterY
         counterY += 1
 
+    if xIndex > 0:
+        xIndex - 1
+
+    if yIndex > 0:
+        xIndex - 1
+
     return xIndex,yIndex
 
-temperatureTest = 90
-humidityTest = 50
+temperatureTest = 84
+humidityTest = 45
 
 xIndex = getIndex(humidityTest,temperatureTest,table_matrix)[0] - 1
 yIndex = getIndex(humidityTest,temperatureTest, table_matrix)[1] - 1
@@ -315,7 +321,7 @@ fig, ax = plt.subplots(1,1, figsize=(8,8))
 
 #Plot points and heatmap
 heatplot = ax.imshow(table_matrix, cmap= cmap, norm = norm) #make the heatmap
-ax.scatter(xIndex,yIndex, label = '*', color = 'black')
+heatplot = ax.scatter(xIndex,yIndex, marker = 'o', c = 'black', linewidth = 7)
 
 
 #set up the axis
@@ -334,8 +340,10 @@ gold_patch = mpatches.Patch(color='gold', label='Caution')
 goldenrod_patch = mpatches.Patch(color='goldenrod', label='Extreme Caution')
 orange_patch = mpatches.Patch(color = 'orange', label = 'Danger')
 red_patch = mpatches.Patch(color = 'red', label = 'Extreme Danger')
-plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch], loc='upper center', bbox_to_anchor=(0.5, -0.05),
-          fancybox=True, shadow=True, ncol=5)
+point_patch = mpatches.Patch(color = 'black', label = 'Today Index')
+plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch,point_patch], loc='upper center',
+           bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5)
+
 #show the heatmap
 plt.show()
 
