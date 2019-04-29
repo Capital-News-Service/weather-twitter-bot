@@ -256,7 +256,7 @@ def getIndex(humidity, temperature, table_matrix):
 
         return xIndex, yIndex
 
-#rounding for temperature
+#rounding for temperature -> testCode
 def roundTemp(temperature):
     if(temperature >= 80 and temperature <= 110):
         if( temperature != 80 or temperature != 82 or temperature != 84 or temperature != 86 or temperature != 88 or
@@ -267,7 +267,7 @@ def roundTemp(temperature):
 
     return temperature
 
-#rounding for humidity
+#rounding for humidity -> test code
 def roundHumidity(humidity):
     if(humidity >= 40 and humidity <= 100):
         if(40 <= humidity <= 45):
@@ -362,12 +362,12 @@ def runGraph():
     table_matrix = table.pivot("Relative Humidity", "Temperature", "Heat Index")
 
     #data for testing with plotting Today's Index
-    temperatureTest = 84
-    humidityTest = 45
+    #temperatureTest = 84
+    #humidityTest = 45
 
     #Calculate where to plot the point
-    xIndex = getIndex(humidityTest, temperatureTest, table_matrix)[0]
-    yIndex = getIndex(humidityTest, temperatureTest, table_matrix)[1]
+    #xIndex = getIndex(humidityTest, temperatureTest, table_matrix)[0]
+    #yIndex = getIndex(humidityTest, temperatureTest, table_matrix)[1]
 
 
     # set up the color ranges
@@ -384,7 +384,8 @@ def runGraph():
     Temperature = np.array([80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110])
 
     ax.imshow(table_matrix, cmap=cmap, norm=norm)  # make the heatmap
-    ax.scatter(xIndex, yIndex, marker='o', c='black', linewidth=7)
+    #ax.scatter(xIndex, yIndex, marker='o', c='black', linewidth=7)
+    #ax.scatter(getIndex(100,50,table_matrix)[0], getIndex(100,50,table_matrix)[1] , marker = 'o', c = 'silver', linewidth = 5)
 
     # set up the axis and title
     ax.set_xticklabels(table_matrix.columns)
@@ -409,11 +410,12 @@ def runGraph():
     red_patch = mpatches.Patch(color='red', label='Extreme Danger')
     point_patch = mpatches.Patch(color='black', label='Today Weather Feels')
     future_patch = mpatches.Patch(color='gray', label = 'Upcoming Five Days Feel')
-    plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch, point_patch, future_patch],
-               loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=6,
-               title = 'Likelihood of Heat Disorders with Prolonged Exposure or Strenous Activity', prop = {'size': 10})
+    past_patch = mpatches.Patch(color = 'silver', label = 'Hottest Day in 2018')
+    plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch, point_patch, future_patch, past_patch],
+               loc='upper center', bbox_to_anchor=(0.5, -0.0125), fancybox=True, shadow=True, ncol=4,
+               title = 'Likelihood of Heat Disorders with Prolonged Exposure or Strenous Activity')
 
     # show the heatmap
     plt.show()
 
-#runGraph()
+runGraph()
