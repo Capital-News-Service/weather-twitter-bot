@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib import colors
 import matplotlib.patches as mpatches
-import seaborn as sns
 
 ########################### CONFIG ############################
 keys = {}
@@ -141,9 +140,10 @@ def simpleHeatIndex(temperature, humidity):
 
 #the heat index is then compared. If it is 80 or higher, the full formula is applied
 def fullHeatIndex(temperature, humidity):
-    heatIndex = -42.379 + 2.04901523 * temperature + 10.14333127 * humidity - .22475541 * temperature * humidity - .00683783 * temperature * temperature - \
-         .05481717 * humidity * humidity + .00122874 * temperature * temperature * humidity + .00085282 * temperature * humidity * humidity - \
-         .00000199 * temperature * temperature * humidity * humidity
+    heatIndex = -42.379 + 2.04901523 * temperature + 10.14333127 * humidity - .22475541 * temperature * humidity - \
+                .00683783 * temperature * temperature - .05481717 * humidity * humidity + .00122874 * temperature * \
+                temperature * humidity + .00085282 * temperature * humidity * humidity - \
+                .00000199 * temperature * temperature * humidity * humidity
 
     if temperature > 80 and temperature < 112 and humidity < 0.13:
         subtractionheat = ((13 - humidity)/4) * math.sqrt((17 - abs(temperature - 95)) / 17)
@@ -157,18 +157,20 @@ def fullHeatIndex(temperature, humidity):
 #determine the actual heat index
 def finalHeatIndex(temperature, humidity):
     if simpleHeatIndex(temperature,humidity) >= 80:
-        return fullHeatIndex(temperature, humidity)
+        return round(fullHeatIndex(temperature, humidity))
     else:
-        return simpleHeatIndex(temperature,humidity)
+        return round(simpleHeatIndex(temperature,humidity))
 
 #determine the recommendation
 def recommendation(heatIndex):
     if 80 <= heatIndex < 90:
         return "Caution: Fatigue possible with prolonged exposure and/or physical activity"
     elif 90 <= heatIndex < 103:
-        return "Extreme Caution: Heat stroke, heat cramps, or heat exhaustion possible with problonged exposure and/or physical activity"
+        return "Extreme Caution: Heat stroke, heat cramps, or heat exhaustion possible with problonged exposure " \
+               "and/or physical activity"
     elif 103 <= heatIndex <= 124:
-        return "Danger: Heat cramps or heat exhaustion likely, and heat stroke possible with prolonged exposure and/or physical activity"
+        return "Danger: Heat cramps or heat exhaustion likely, and heat stroke possible with prolonged exposure " \
+               "and/or physical activity"
     elif 125 <= heatIndex:
         return "Extreme Danger: Heat stroke highly likely"
 
@@ -185,7 +187,9 @@ def getHeatData(temperatureFinalData, humidityFinalData):
     return heatIndex
 
 #Obtain the heat data
-#heatFinalData = getHeatData(temperatureFinalData,humidityFinalData)
+
+heatFinalData = finalHeatIndex(81,58)
+print(heatFinalData)
 
 
 #store the tweet for the next five days
@@ -324,18 +328,25 @@ def runGraph():
 
     # set up the heat map
     plt.figure()
-    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    fig, ax = plt.subplots(1, 1, figsize=(11, 8))
 
     # Plot points and heatmap
+    RH = np.array([40,45,50,55,60,65,70,75,80,85,90,95,100])
+    Temperature = np.array([80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110])
+
     ax.imshow(table_matrix, cmap=cmap, norm=norm)  # make the heatmap
     ax.scatter(xIndex, yIndex, marker='o', c='black', linewidth=7)
 
     # set up the axis and title
     ax.set_xticklabels(table_matrix.columns)
     ax.set_yticklabels(table_matrix.index)
+
     tick_spacing = 1
     ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
     ax.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
+
+
+
     ax.set_title("Heat Index Chart", loc = 'left')
     ax.set_xlabel('Temperature (F)', fontsize = 14)
     ax.xaxis.set_label_position('top')
@@ -347,10 +358,11 @@ def runGraph():
     goldenrod_patch = mpatches.Patch(color='goldenrod', label='Extreme Caution')
     orange_patch = mpatches.Patch(color='orange', label='Danger')
     red_patch = mpatches.Patch(color='red', label='Extreme Danger')
-    point_patch = mpatches.Patch(color='black', label='Today Index')
-    plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch, point_patch], loc='upper center',
-               bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=5,
-               title = 'Likelihood of Heat Disorders with Prolonged Exposure or Strenous Activity')
+    point_patch = mpatches.Patch(color='black', label='Today Weather Feels')
+    future_patch = mpatches.Patch(color='gray', label = 'Upcoming Five Days Feel')
+    plt.legend(handles=[gold_patch, goldenrod_patch, orange_patch, red_patch, point_patch, future_patch],
+               loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, shadow=True, ncol=6,
+               title = 'Likelihood of Heat Disorders with Prolonged Exposure or Strenous Activity', prop = {'size': 10})
 
     # show the heatmap
     plt.show()
