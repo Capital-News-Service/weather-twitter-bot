@@ -227,10 +227,12 @@ def runBot():
 #make things in matplotlib
 #worst day last summer
 
+#return the maximum temperature and humidity for the current and upcoming five days
 def getMaxTempandHumidity():
     dict = getTweet()[1].to_dict()
     return dict['Temperature'],dict['Humidity']
 
+#get the index to plot on the graph
 def getIndex(humidity, temperature, table_matrix):
         xIndex = 0
         yIndex = 0
@@ -253,6 +255,53 @@ def getIndex(humidity, temperature, table_matrix):
             xIndex = xIndex - 1
 
         return xIndex, yIndex
+
+#rounding for temperature
+def roundTemp(temperature):
+    if(temperature >= 80 and temperature <= 110):
+        if( temperature != 80 or temperature != 82 or temperature != 84 or temperature != 86 or temperature != 88 or
+            temperature != 90 or temperature != 92 or temperature != 94 or temperature != 96 or temperature != 98 or
+            temperature != 100 or temperature != 102 or temperature != 104 or temperature != 106 or temperature != 108 or
+            temperature != 110):
+            temperature += 1
+
+    return temperature
+
+#rounding for humidity
+def roundHumidity(humidity):
+    if(humidity >= 40 and humidity <= 100):
+        if(40 <= humidity <= 45):
+            humidity = 45
+        if(45 <= humidity <= 50):
+            humidity = 50
+        if(50 <= humidity <= 55):
+            humidity = 55
+        if(55 <= humidity <= 60):
+           humidity = 60
+        if(60 <= humidity <= 65):
+            humidity = 65
+        if(65 <= humidity <= 70):
+            humidity = 70
+        if(70 <= humidity <= 75):
+            humidity = 75
+        if(75 <= humidity <= 80):
+           humidity = 80
+        if(80 <= humidity <= 85):
+            humidity = 85
+        if(85 <= humidity <= 90):
+            humidity = 90
+        if(90 <= humidity <= 95):
+            humidity = 95
+        if(95 <= humidity <= 100):
+            humidity = 100
+        if(100 <= humidity <= 105):
+            humidity = 105
+        if(105 <= humidity <= 110):
+            humidity = 110
+
+    return humidity
+
+
 
 #Function to construct the heat map and plot today's index
 def runGraph():
@@ -367,4 +416,4 @@ def runGraph():
     # show the heatmap
     plt.show()
 
-runGraph()
+#runGraph()
