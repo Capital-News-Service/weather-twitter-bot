@@ -256,14 +256,39 @@ def getIndex(humidity, temperature, table_matrix):
 
         return xIndex, yIndex
 
-#rounding for temperature -> testCode
+#rounding for temperature -> testCode -> make an edit
 def roundTemp(temperature):
     if(temperature >= 80 and temperature <= 110):
-        if( temperature != 80 or temperature != 82 or temperature != 84 or temperature != 86 or temperature != 88 or
-            temperature != 90 or temperature != 92 or temperature != 94 or temperature != 96 or temperature != 98 or
-            temperature != 100 or temperature != 102 or temperature != 104 or temperature != 106 or temperature != 108 or
-            temperature != 110):
-            temperature += 1
+        if(80 <= temperature <= 82):
+            temperature = 82
+        if(82 <= temperature <= 84):
+            temperature = 84
+        if(84 <= temperature <= 86):
+            temperature = 86
+        if(86 <= temperature <= 88):
+            temperature = 88
+        if(88 <= temperature <= 90):
+            temperature = 90
+        if(90 <= temperature <= 92):
+            temperature = 92
+        if(92 <= temperature <= 94):
+            temperature = 94
+        if(94 <= temperature <= 96):
+            temperature = 96
+        if(96 <= temperature <= 98):
+            temperature = 98
+        if(98 <= temperature <= 100):
+            temperature = 100
+        if(100 <= temperature <= 102):
+            temperature = 102
+        if(102 <= temperature <= 104):
+            temperature = 104
+        if(104 <= temperature <= 106):
+            temperature = 106
+        if(106 <= temperature <= 108):
+            temperature = 108
+        if(108 <= temperature <= 110):
+            temperature = 110
 
     return temperature
 
@@ -301,12 +326,8 @@ def roundHumidity(humidity):
 
     return humidity
 
-
-
-#Function to construct the heat map and plot today's index
-def runGraph():
-
-    #Relative Humidity
+def getTableMatrix():
+    # Relative Humidity
     RH = [40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40,
           45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45,
           50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50,
@@ -323,7 +344,7 @@ def runGraph():
 
     RH.sort(reverse=True)
 
-    #Temperature in F
+    # Temperature in F
     T = [80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
          80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
          80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
@@ -338,7 +359,7 @@ def runGraph():
          80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110,
          80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110]
 
-    #Heat Index
+    # Heat Index
     HI = [87, 95, 103, 112, 121, 132, 143, 155, 168, 181, 195, 210, 226, 243, 260, 278,
           86, 93, 100, 108, 117, 127, 137, 148, 160, 172, 185, 199, 214, 229, 245, 262,
           86, 91, 98, 105, 113, 122, 131, 141, 152, 164, 176, 189, 202, 216, 231, 247,
@@ -353,23 +374,95 @@ def runGraph():
           80, 82, 84, 87, 89, 93, 96, 100, 104, 109, 114, 119, 124, 130, 137, 143,
           80, 81, 83, 85, 88, 91, 94, 97, 101, 105, 109, 114, 119, 124, 130, 136]
 
-    #Turn the data into a table
+    # Turn the data into a table
     table = pd.DataFrame({"Relative Humidity": RH})
     table["Temperature"] = T
     table["Heat Index"] = HI
 
-    #Turn the data into matrix
+    # Turn the data into matrix
     table_matrix = table.pivot("Relative Humidity", "Temperature", "Heat Index")
 
-    #data for testing with plotting Today's Index
-    #temperatureTest = 84
-    #humidityTest = 45
-
-    #Calculate where to plot the point
-    #xIndex = getIndex(humidityTest, temperatureTest, table_matrix)[0]
-    #yIndex = getIndex(humidityTest, temperatureTest, table_matrix)[1]
+    return table_matrix
 
 
+
+def getCurrIndex():
+
+    #check the temp and humdiity for rounding
+    maxTemp = roundTemp(getMaxTempandHumidity()[0][0])
+    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][0])
+    table_matrix = getTableMatrix()
+
+    #get the index
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+
+    return xIndex, yIndex
+
+def getOneDayIndex():
+    # check the temp and humdiity for rounding
+    maxTemp = roundTemp(getMaxTempandHumidity()[0][1])
+    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][1])
+    table_matrix = getTableMatrix()
+
+    # get the index
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+
+    return xIndex, yIndex
+
+def getSecondDayIndex():
+    # check the temp and humdiity for rounding
+    maxTemp = roundTemp(getMaxTempandHumidity()[0][2])
+    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][2])
+    table_matrix = getTableMatrix()
+
+    # get the index
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+
+    return xIndex, yIndex
+
+def getThirdDayIndex():
+    # check the temp and humdiity for rounding
+    maxTemp = roundTemp(getMaxTempandHumidity()[0][3])
+    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][3])
+    table_matrix = getTableMatrix()
+
+    # get the index
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+
+    return xIndex, yIndex
+
+def getFourthDayIndex():
+    # check the temp and humdiity for rounding
+    maxTemp = roundTemp(getMaxTempandHumidity()[0][4])
+    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][4])
+    table_matrix = getTableMatrix()
+
+    # get the index
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+
+    return xIndex, yIndex
+
+def getFifthDayIndex():
+    # check the temp and humdiity for rounding
+    maxTemp = roundTemp(getMaxTempandHumidity()[0][5])
+    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][5])
+    table_matrix = getTableMatrix()
+
+    # get the index
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+
+    return xIndex, yIndex
+
+
+
+#Function to construct the heat map and plot today's index
+def runGraph():
     # set up the color ranges
     cmap = colors.ListedColormap(['gold', 'goldenrod', 'orange', 'red'])
     bounds = [80, 90, 103, 124, 278]
@@ -379,24 +472,44 @@ def runGraph():
     plt.figure()
     fig, ax = plt.subplots(1, 1, figsize=(11, 8))
 
-    # Plot points and heatmap
-    RH = np.array([40,45,50,55,60,65,70,75,80,85,90,95,100])
-    Temperature = np.array([80,82,84,86,88,90,92,94,96,98,100,102,104,106,108,110])
+    # get the table matrix for plotting
+    table_matrix = getTableMatrix()
 
     ax.imshow(table_matrix, cmap=cmap, norm=norm)  # make the heatmap
-    #ax.scatter(xIndex, yIndex, marker='o', c='black', linewidth=7)
-    #ax.scatter(getIndex(100,50,table_matrix)[0], getIndex(100,50,table_matrix)[1] , marker = 'o', c = 'silver', linewidth = 5)
+
+    #get the indexes for five days
+    currXIndex = getCurrIndex()[0]
+    currYIndex = getCurrIndex()[1]
+
+    onedayXIndex = getOneDayIndex()[0]
+    onedayYIndex = getOneDayIndex()[1]
+
+    seconddayXIndex = getSecondDayIndex()[0]
+    secondayYIndex = getSecondDayIndex()[1]
+
+    thirddayxIndex = getThirdDayIndex()[0]
+    thirddayyIndex = getThirdDayIndex()[1]
+
+    fourthdayxIndex = getFourthDayIndex()[0]
+    fourthdayyIndex = getFourthDayIndex()[1]
+
+    fifthdayxIndex = getFifthDayIndex()[0]
+    fifthdayyIndex = getFifthDayIndex()[1]
+
+    #plot the indexes
+    ax.scatter(currXIndex, currYIndex, colors = 'black')
+    ax.scatter(onedayXIndex, onedayYIndex, colors = 'gray')
+    ax.scatter(seconddayXIndex, secondayYIndex, colors = 'gray')
+    ax.scatter(thirddayxIndex, thirddayyIndex, colors = 'gray')
+    ax.scatter(fourthdayxIndex, fourthdayyIndex, colors = 'gray')
+    ax.scatter(fifthdayxIndex, fifthdayyIndex, colors = 'gray')
 
     # set up the axis and title
     ax.set_xticklabels(table_matrix.columns)
     ax.set_yticklabels(table_matrix.index)
-
     tick_spacing = 1
     ax.xaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
     ax.yaxis.set_major_locator(ticker.MultipleLocator(tick_spacing))
-
-
-
     ax.set_title("Heat Index Chart", loc = 'left')
     ax.set_xlabel('Temperature (F)', fontsize = 14)
     ax.xaxis.set_label_position('top')
