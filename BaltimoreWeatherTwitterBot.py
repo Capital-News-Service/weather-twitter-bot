@@ -16,9 +16,9 @@ keys = {}
 with open("key.json","r") as f:
         keys = json.loads(f.read())
 #Consumer keys and access tokens, used for OAuth
-consumer_key =  keys["consumer_key"]
+consumer_key = keys["consumer_key"]
 consumer_secret = keys["consumer_secret"]
-access_token =  keys["access_token"]
+access_token = keys["access_token"]
 access_secret = keys["access_secret"]
 
 # OAuth process, using the keys and tokens
@@ -52,7 +52,7 @@ def getData():
 
     return maxTemperatureData, humidityData, timeData
 
-#finding the maxTemperature of each day
+# finding the maxTemperature of each day
 def getTempTimeData():
     tempoTempData = getData()[0]
     tempoTimeData = getData()[2]
@@ -110,7 +110,7 @@ def getTempTimeData():
     outputDate = newDate0 + newDate1 + newDate2 + newDate3 + newDate4 + newDate5
     return  outputTemp,outputDate
 
-#Obtain the highest humidity of the day with the highest temperature
+# Obtain the highest humidity of the day with the highest temperature
 def getHumidity():
     tempoHumidityData = getData()[1]
     timeFinalData = getTempTimeData()[1]
@@ -174,8 +174,8 @@ def recommendation(heatIndex):
     elif 125 <= heatIndex:
         return "Extreme Danger: Heat stroke highly likely"
 
-#Calculate the heat data using the temperature data and humidity data
-#return heat indexes as a list
+# Calculate the heat data using the temperature data and humidity data
+# return heat indexes as a list
 def getHeatData(temperatureFinalData, humidityFinalData):
     maxTemp = np.array(temperatureFinalData)
     humidityList = np.array(humidityFinalData)
@@ -185,12 +185,6 @@ def getHeatData(temperatureFinalData, humidityFinalData):
 
     heatIndex = np.array(heatIndex).tolist()
     return heatIndex
-
-#Obtain the heat data
-
-heatFinalData = finalHeatIndex(81,58)
-print(heatFinalData)
-
 
 #store the tweet for the next five days
 #turn the data into data frame and return a list of String for the tweet.
@@ -213,24 +207,39 @@ def getTweet():
         tweetList.append(tweet)
         i += 1
 
-    return tweetList, table.iloc[0]
+    #return the tweet and the data for the upcoming five days
+    return tweetList, table.iloc[0], table.iloc[1],table.iloc[2], table.iloc[3],table.iloc[4], table.iloc[5]
 
-#Run the bot
-def runBot():
-    tweetOut = ''.join(getTweet()[0])
-    # Tweet the list of data
-    api.update_status(tweetOut)
-
-#runBot()
-#https://twitter.com/HeatBaltimore
-#At certain time, it will feel the hottest with temperature x and humidity is y
-#make things in matplotlib
-#worst day last summer
-
-#return the maximum temperature and humidity for the current and upcoming five days
+# return the maximum temperature and humidity for the current day
 def getMaxTempandHumidity():
     dict = getTweet()[1].to_dict()
     return dict['Temperature'],dict['Humidity']
+
+# return the maximum temperature and humidity for the first next day
+def getMaxTempandHumidityFirst():
+    dict = getTweet()[2].to_dict()
+    return dict['Temperature'], dict['Humidity']
+
+# return the maximum temperature and humidity for the second next day
+def getMaxTempandHumiditySecond():
+    dict = getTweet()[3].to_dict()
+    return dict['Temperature'], dict['Humidty']
+
+# return the maximum temperature and humidity for the third next day
+def getMaxTempandHumidityThird():
+    dict = getTweet()[4].to_dict()
+    return dict['Temperature'], dict['Humidity']
+
+# return the maximum temperature and humidity for the fourth next day
+def getMaxTempandHumidityFourth():
+    dict = getTweet()[5].to_dict()
+    return dict['Temperature'], dict['Humidity']
+
+# return the maximum temperature and humidity for the fifth next day
+def getMaxTempandHumidityFifth():
+    dict = getTweet()[6].to_dict()
+    return dict['Temperature'], dict['Humidity']
+
 
 #get the index to plot on the graph
 def getIndex(humidity, temperature, table_matrix):
@@ -258,70 +267,59 @@ def getIndex(humidity, temperature, table_matrix):
 
 #rounding for temperature -> testCode -> make an edit
 def roundTemp(temperature):
-    if(temperature >= 80 and temperature <= 110):
-        if(80 <= temperature <= 82):
+    if 80 <= temperature <= 100:
+        if 80 <= temperature <= 82:
             temperature = 82
-        if(82 <= temperature <= 84):
+        if 82 <= temperature <= 84:
             temperature = 84
-        if(84 <= temperature <= 86):
+        if 84 <= temperature <= 86:
             temperature = 86
-        if(86 <= temperature <= 88):
+        if 86 <= temperature <= 88:
             temperature = 88
-        if(88 <= temperature <= 90):
+        if 88 <= temperature <= 90:
             temperature = 90
-        if(90 <= temperature <= 92):
+        if 90 <= temperature <= 92:
             temperature = 92
-        if(92 <= temperature <= 94):
+        if 92 <= temperature <= 94:
             temperature = 94
-        if(94 <= temperature <= 96):
+        if 94 <= temperature <= 96:
             temperature = 96
-        if(96 <= temperature <= 98):
+        if 96 <= temperature <= 98:
             temperature = 98
-        if(98 <= temperature <= 100):
+        if 98 <= temperature <= 100:
             temperature = 100
-        if(100 <= temperature <= 102):
-            temperature = 102
-        if(102 <= temperature <= 104):
-            temperature = 104
-        if(104 <= temperature <= 106):
-            temperature = 106
-        if(106 <= temperature <= 108):
-            temperature = 108
-        if(108 <= temperature <= 110):
-            temperature = 110
-
     return temperature
 
 #rounding for humidity -> test code
 def roundHumidity(humidity):
-    if(humidity >= 40 and humidity <= 100):
-        if(40 <= humidity <= 45):
+    if 40 <= humidity <= 110:
+        if 40 <= humidity <= 45:
             humidity = 45
-        if(45 <= humidity <= 50):
+        if 45 <= humidity <= 50:
             humidity = 50
-        if(50 <= humidity <= 55):
+        if 50 <= humidity <= 55:
             humidity = 55
-        if(55 <= humidity <= 60):
+        if 55 <= humidity <= 60:
            humidity = 60
-        if(60 <= humidity <= 65):
+        if 60 <= humidity <= 65:
             humidity = 65
-        if(65 <= humidity <= 70):
+        if 65 <= humidity <= 70:
             humidity = 70
-        if(70 <= humidity <= 75):
+        if 70 <= humidity <= 75:
             humidity = 75
-        if(75 <= humidity <= 80):
+        if 75 <= humidity <= 80:
            humidity = 80
-        if(80 <= humidity <= 85):
+        if 80 <= humidity <= 85:
             humidity = 85
-        if(85 <= humidity <= 90):
+        if 85 <= humidity <= 90:
             humidity = 90
-        if(90 <= humidity <= 95):
+        if 90 <= humidity <= 95:
             humidity = 95
-        if(95 <= humidity <= 100):
+        if 95 <= humidity <= 100:
             humidity = 100
-        if(100 <= humidity <= 105):
+        if 100 <= humidity <= 105:
             humidity = 105
-        if(105 <= humidity <= 110):
+        if 105 <= humidity <= 110:
             humidity = 110
 
     return humidity
@@ -389,8 +387,8 @@ def getTableMatrix():
 def getCurrIndex():
 
     #check the temp and humdiity for rounding
-    maxTemp = roundTemp(getMaxTempandHumidity()[0][0])
-    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][0])
+    maxTemp = roundTemp(getMaxTempandHumidity()[0])
+    maxHumidity = roundHumidity(getMaxTempandHumidity()[1])
     table_matrix = getTableMatrix()
 
     #get the index
@@ -399,10 +397,11 @@ def getCurrIndex():
 
     return xIndex, yIndex
 
-def getOneDayIndex():
+# return the index for the following first day
+def getFirsDayIndex():
     # check the temp and humdiity for rounding
-    maxTemp = roundTemp(getMaxTempandHumidity()[0][1])
-    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][1])
+    maxTemp = roundTemp(getMaxTempandHumidityFirst()[0])
+    maxHumidity = roundHumidity(getMaxTempandHumidityFirst()[1])
     table_matrix = getTableMatrix()
 
     # get the index
@@ -411,10 +410,11 @@ def getOneDayIndex():
 
     return xIndex, yIndex
 
+# return the index for the following second day
 def getSecondDayIndex():
     # check the temp and humdiity for rounding
-    maxTemp = roundTemp(getMaxTempandHumidity()[0][2])
-    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][2])
+    maxTemp = roundTemp(getMaxTempandHumiditySecond()[0])
+    maxHumidity = roundHumidity(getMaxTempandHumiditySecond()[1])
     table_matrix = getTableMatrix()
 
     # get the index
@@ -423,10 +423,11 @@ def getSecondDayIndex():
 
     return xIndex, yIndex
 
+# return the index for the following third day
 def getThirdDayIndex():
     # check the temp and humdiity for rounding
-    maxTemp = roundTemp(getMaxTempandHumidity()[0][3])
-    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][3])
+    maxTemp = roundTemp(getMaxTempandHumidityThird()[0])
+    maxHumidity = roundHumidity(getMaxTempandHumidityThird()[1])
     table_matrix = getTableMatrix()
 
     # get the index
@@ -435,10 +436,11 @@ def getThirdDayIndex():
 
     return xIndex, yIndex
 
+# return the index for the following fourth day
 def getFourthDayIndex():
     # check the temp and humdiity for rounding
-    maxTemp = roundTemp(getMaxTempandHumidity()[0][4])
-    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][4])
+    maxTemp = roundTemp(getMaxTempandHumidityFourth()[0])
+    maxHumidity = roundHumidity(getMaxTempandHumidityFourth()[1])
     table_matrix = getTableMatrix()
 
     # get the index
@@ -447,10 +449,11 @@ def getFourthDayIndex():
 
     return xIndex, yIndex
 
+# return the index for the following fifth day
 def getFifthDayIndex():
     # check the temp and humdiity for rounding
-    maxTemp = roundTemp(getMaxTempandHumidity()[0][5])
-    maxHumidity = roundHumidity(getMaxTempandHumidity()[1][5])
+    maxTemp = roundTemp(getMaxTempandHumidityFifth()[0][5])
+    maxHumidity = roundHumidity(getMaxTempandHumidityFifth()[1][5])
     table_matrix = getTableMatrix()
 
     # get the index
@@ -481,8 +484,8 @@ def runGraph():
     currXIndex = getCurrIndex()[0]
     currYIndex = getCurrIndex()[1]
 
-    onedayXIndex = getOneDayIndex()[0]
-    onedayYIndex = getOneDayIndex()[1]
+    onedayXIndex = getFirsDayIndex()[0]
+    onedayYIndex = getFirsDayIndex()[1]
 
     seconddayXIndex = getSecondDayIndex()[0]
     secondayYIndex = getSecondDayIndex()[1]
@@ -531,4 +534,10 @@ def runGraph():
     # show the heatmap
     plt.show()
 
-runGraph()
+# Run the bot
+def runBot():
+    tweetOut = ''.join(getTweet()[0])
+    # Tweet the list of data
+    api.update_status(tweetOut)
+
+#runGraph()
