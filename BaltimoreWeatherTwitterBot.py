@@ -213,32 +213,40 @@ def getTweet():
 # return the maximum temperature and humidity for the current day
 def getMaxTempandHumidity():
     dict = getTweet()[1].to_dict()
+    #print(dict['Temperature'],dict['Humidity'])
     return dict['Temperature'],dict['Humidity']
 
 # return the maximum temperature and humidity for the first next day
 def getMaxTempandHumidityFirst():
     dict = getTweet()[2].to_dict()
+    #print(dict)
     return dict['Temperature'], dict['Humidity']
 
 # return the maximum temperature and humidity for the second next day
 def getMaxTempandHumiditySecond():
     dict = getTweet()[3].to_dict()
-    return dict['Temperature'], dict['Humidty']
+    #print(dict)
+    return dict['Temperature'], dict['Humidity']
 
 # return the maximum temperature and humidity for the third next day
 def getMaxTempandHumidityThird():
     dict = getTweet()[4].to_dict()
+    #print(dict)
     return dict['Temperature'], dict['Humidity']
 
 # return the maximum temperature and humidity for the fourth next day
 def getMaxTempandHumidityFourth():
     dict = getTweet()[5].to_dict()
+    #print(dict)
     return dict['Temperature'], dict['Humidity']
 
 # return the maximum temperature and humidity for the fifth next day
 def getMaxTempandHumidityFifth():
     dict = getTweet()[6].to_dict()
+    #print(dict)
     return dict['Temperature'], dict['Humidity']
+
+
 
 
 #get the index to plot on the graph
@@ -270,59 +278,61 @@ def roundTemp(temperature):
     if 80 <= temperature <= 100:
         if 80 <= temperature <= 82:
             temperature = 82
-        if 82 <= temperature <= 84:
+        elif 82 <= temperature <= 84:
             temperature = 84
-        if 84 <= temperature <= 86:
+        elif 84 <= temperature <= 86:
             temperature = 86
-        if 86 <= temperature <= 88:
+        elif 86 <= temperature <= 88:
             temperature = 88
-        if 88 <= temperature <= 90:
+        elif 88 <= temperature <= 90:
             temperature = 90
-        if 90 <= temperature <= 92:
+        elif 90 <= temperature <= 92:
             temperature = 92
-        if 92 <= temperature <= 94:
+        elif 92 <= temperature <= 94:
             temperature = 94
-        if 94 <= temperature <= 96:
+        elif 94 <= temperature <= 96:
             temperature = 96
-        if 96 <= temperature <= 98:
+        elif 96 <= temperature <= 98:
             temperature = 98
-        if 98 <= temperature <= 100:
+        elif 98 <= temperature <= 100:
             temperature = 100
     return temperature
+
 
 #rounding for humidity -> test code
 def roundHumidity(humidity):
     if 40 <= humidity <= 110:
         if 40 <= humidity <= 45:
             humidity = 45
-        if 45 <= humidity <= 50:
+        elif 45 <= humidity <= 50:
             humidity = 50
-        if 50 <= humidity <= 55:
+        elif 50 <= humidity <= 55:
             humidity = 55
-        if 55 <= humidity <= 60:
-           humidity = 60
-        if 60 <= humidity <= 65:
+        elif 55 <= humidity <= 60:
+            humidity = 60
+        elif 60 <= humidity <= 65:
             humidity = 65
-        if 65 <= humidity <= 70:
+        elif 65 <= humidity <= 70:
             humidity = 70
-        if 70 <= humidity <= 75:
+        elif 70 <= humidity <= 75:
             humidity = 75
-        if 75 <= humidity <= 80:
-           humidity = 80
-        if 80 <= humidity <= 85:
+        elif 75 <= humidity <= 80:
+            humidity = 80
+        elif 80 <= humidity <= 85:
             humidity = 85
-        if 85 <= humidity <= 90:
+        elif 85 <= humidity <= 90:
             humidity = 90
-        if 90 <= humidity <= 95:
+        elif 90 <= humidity <= 95:
             humidity = 95
-        if 95 <= humidity <= 100:
+        elif 95 <= humidity <= 100:
             humidity = 100
-        if 100 <= humidity <= 105:
+        elif 100 <= humidity <= 105:
             humidity = 105
-        if 105 <= humidity <= 110:
+        elif 105 <= humidity <= 110:
             humidity = 110
 
-    return humidity
+        return humidity
+
 
 def getTableMatrix():
     # Relative Humidity
@@ -395,8 +405,9 @@ def getCurrIndex():
     xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
     yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
 
-    return xIndex, yIndex
+   # print(maxTemp, maxHumidity)
 
+    return xIndex, yIndex
 # return the index for the following first day
 def getFirsDayIndex():
     # check the temp and humdiity for rounding
@@ -452,8 +463,8 @@ def getFourthDayIndex():
 # return the index for the following fifth day
 def getFifthDayIndex():
     # check the temp and humdiity for rounding
-    maxTemp = roundTemp(getMaxTempandHumidityFifth()[0][5])
-    maxHumidity = roundHumidity(getMaxTempandHumidityFifth()[1][5])
+    maxTemp = roundTemp(getMaxTempandHumidityFifth()[0])
+    maxHumidity = roundHumidity(getMaxTempandHumidityFifth()[1])
     table_matrix = getTableMatrix()
 
     # get the index
@@ -499,13 +510,15 @@ def runGraph():
     fifthdayxIndex = getFifthDayIndex()[0]
     fifthdayyIndex = getFifthDayIndex()[1]
 
+
     #plot the indexes
-    ax.scatter(currXIndex, currYIndex, colors = 'black')
-    ax.scatter(onedayXIndex, onedayYIndex, colors = 'gray')
-    ax.scatter(seconddayXIndex, secondayYIndex, colors = 'gray')
-    ax.scatter(thirddayxIndex, thirddayyIndex, colors = 'gray')
-    ax.scatter(fourthdayxIndex, fourthdayyIndex, colors = 'gray')
-    ax.scatter(fifthdayxIndex, fifthdayyIndex, colors = 'gray')
+   # ax.scatter(currXIndex, currYIndex, color = 'black', linewidth = 10)
+   # ax.scatter(onedayXIndex, onedayYIndex, color = 'gray', linewidth = 10)
+   # ax.scatter(seconddayXIndex, secondayYIndex, color = 'gray', linewidth = 10)
+   # ax.scatter(thirddayxIndex, thirddayyIndex, color = 'gray', linewidth = 10)
+   # ax.scatter(fourthdayxIndex, fourthdayyIndex, color = 'gray', linewidth = 10)
+   # ax.scatter(fifthdayxIndex, fifthdayyIndex, color = 'gray', linewidth = 10)
+
 
     # set up the axis and title
     ax.set_xticklabels(table_matrix.columns)
@@ -540,4 +553,4 @@ def runBot():
     # Tweet the list of data
     api.update_status(tweetOut)
 
-#runGraph()
+runGraph()
