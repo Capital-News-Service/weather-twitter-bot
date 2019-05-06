@@ -129,7 +129,7 @@ def dayInString():
     timeFinalData = getTempTimeData()[1]
     dayString = []
     for day in timeFinalData:
-        newDay = day.strftime('%A, %B %d, %H:%M %p')
+        newDay = day.strftime('%A %m/%d at %-I%p')
         dayString.append(newDay)
     return dayString
 
@@ -200,54 +200,46 @@ def getTweet():
     tweetList = []
     index = len(table)
     i = 0
-    while i < index:
+    while i < index - 3:
         dict = table.iloc[i].to_dict()
-        tweet = 'On ' + dict['Time'] + ' ,the heat index is ' + str(dict['Heat Index']) + ' .The temperature reaches ' + \
-                str(dict['Temperature']) + ' with humidity up to ' + str(dict['Humidity']) + ' percent.'
+        tweet = dict['Time'] + ', Heat Index: ' + str(dict['Heat Index']) + ', Temperature: ' + str(dict['Temperature']) \
+                + 'F and Humidity: ' + str(dict['Humidity']) + '%.' + "\n" + "\n"
+       # tweet = 'On ' + dict['Time'] + ' , the heat index is ' + str(dict['Heat Index']) + '.The temperature is ' + \
+       #         str(dict['Temperature']) + ' with humidity reaches ' + str(dict['Humidity']) + '%.' + "\n"
         tweetList.append(tweet)
         i += 1
 
+    # add recommendation line
+    # currHeat = table.iloc[0].to_dict()
+    # tweetList.append(recommendation(currHeat['Heat Index']))
+
     #return the tweet and the data for the upcoming five days
-    return tweetList, table.iloc[0], table.iloc[1],table.iloc[2], table.iloc[3],table.iloc[4], table.iloc[5]
+    return tweetList, table.iloc[0], table.iloc[1],table.iloc[2], table.iloc[3],table.iloc[4]
 
 # return the maximum temperature and humidity for the current day
 def getMaxTempandHumidity():
     dict = getTweet()[1].to_dict()
-    #print(dict['Temperature'],dict['Humidity'])
     return dict['Temperature'],dict['Humidity']
 
 # return the maximum temperature and humidity for the first next day
 def getMaxTempandHumidityFirst():
     dict = getTweet()[2].to_dict()
-    #print(dict)
     return dict['Temperature'], dict['Humidity']
 
 # return the maximum temperature and humidity for the second next day
 def getMaxTempandHumiditySecond():
     dict = getTweet()[3].to_dict()
-    #print(dict)
     return dict['Temperature'], dict['Humidity']
 
 # return the maximum temperature and humidity for the third next day
 def getMaxTempandHumidityThird():
     dict = getTweet()[4].to_dict()
-    #print(dict)
     return dict['Temperature'], dict['Humidity']
 
 # return the maximum temperature and humidity for the fourth next day
 def getMaxTempandHumidityFourth():
     dict = getTweet()[5].to_dict()
-    #print(dict)
     return dict['Temperature'], dict['Humidity']
-
-# return the maximum temperature and humidity for the fifth next day
-def getMaxTempandHumidityFifth():
-    dict = getTweet()[6].to_dict()
-    #print(dict)
-    return dict['Temperature'], dict['Humidity']
-
-
-
 
 #get the index to plot on the graph
 def getIndex(humidity, temperature, table_matrix):
@@ -460,19 +452,6 @@ def getFourthDayIndex():
 
     return xIndex, yIndex
 
-# return the index for the following fifth day
-def getFifthDayIndex():
-    # check the temp and humdiity for rounding
-    maxTemp = roundTemp(getMaxTempandHumidityFifth()[0])
-    maxHumidity = roundHumidity(getMaxTempandHumidityFifth()[1])
-    table_matrix = getTableMatrix()
-
-    # get the index
-    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
-    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
-
-    return xIndex, yIndex
-
 
 
 #Function to construct the heat map and plot today's index
@@ -507,17 +486,12 @@ def runGraph():
     fourthdayxIndex = getFourthDayIndex()[0]
     fourthdayyIndex = getFourthDayIndex()[1]
 
-    fifthdayxIndex = getFifthDayIndex()[0]
-    fifthdayyIndex = getFifthDayIndex()[1]
-
-
     #plot the indexes
-   # ax.scatter(currXIndex, currYIndex, color = 'black', linewidth = 10)
-   # ax.scatter(onedayXIndex, onedayYIndex, color = 'gray', linewidth = 10)
-   # ax.scatter(seconddayXIndex, secondayYIndex, color = 'gray', linewidth = 10)
-   # ax.scatter(thirddayxIndex, thirddayyIndex, color = 'gray', linewidth = 10)
-   # ax.scatter(fourthdayxIndex, fourthdayyIndex, color = 'gray', linewidth = 10)
-   # ax.scatter(fifthdayxIndex, fifthdayyIndex, color = 'gray', linewidth = 10)
+    # ax.scatter(currXIndex, currYIndex, color = 'black', linewidth = 10)
+    # ax.scatter(onedayXIndex, onedayYIndex, color = 'gray', linewidth = 10)
+    # ax.scatter(seconddayXIndex, secondayYIndex, color = 'gray', linewidth = 10)
+    # ax.scatter(thirddayxIndex, thirddayyIndex, color = 'gray', linewidth = 10)
+    # ax.scatter(fourthdayxIndex, fourthdayyIndex, color = 'gray', linewidth = 10)
 
 
     # set up the axis and title
@@ -553,4 +527,5 @@ def runBot():
     # Tweet the list of data
     api.update_status(tweetOut)
 
-runGraph()
+runBot()
+#runGraph()
