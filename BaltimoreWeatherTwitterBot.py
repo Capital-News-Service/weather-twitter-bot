@@ -519,13 +519,18 @@ def runGraph():
                title = 'Likelihood of Heat Disorders with Prolonged Exposure or Strenous Activity')
 
     # show the heatmap
-    plt.show()
+    plt.savefig('HeatGraph.png')
+    #plt.show()
 
 # Run the bot
 def runBot():
     tweetOut = ''.join(getTweet()[0])
-    # Tweet the list of data
-    api.update_status(tweetOut)
+    # Tweet the list of data and add screenshot of the plot
+    media_list = list()
+    response = api.media_upload('HeatGraph.png')
+    media_list.append(response.media_id_string)
+    api.update_status(status=tweetOut, media_ids=media_list)
 
+runGraph()
 runBot()
-#runGraph()
+
