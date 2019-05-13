@@ -286,7 +286,7 @@ def roundTemp(temperature):
             temperature = 96
         elif 96 <= temperature <= 98:
             temperature = 98
-        elif 98 <= temperature <= 100:
+        elif 98 <= temperature:
             temperature = 100
     return temperature
 
@@ -320,7 +320,7 @@ def roundHumidity(humidity):
             humidity = 100
         elif 100 <= humidity <= 105:
             humidity = 105
-        elif 105 <= humidity <= 110:
+        elif 105 <= humidity:
             humidity = 110
 
         return humidity
@@ -394,12 +394,13 @@ def getCurrIndex():
     table_matrix = getTableMatrix()
 
     #get the index
-    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
-    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)[0]
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)[1]
 
    # print(maxTemp, maxHumidity)
 
     return xIndex, yIndex
+
 # return the index for the following first day
 def getFirsDayIndex():
     # check the temp and humdiity for rounding
@@ -408,10 +409,12 @@ def getFirsDayIndex():
     table_matrix = getTableMatrix()
 
     # get the index
-    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
-    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)[0]
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)[1]
+
 
     return xIndex, yIndex
+
 
 # return the index for the following second day
 def getSecondDayIndex():
@@ -421,8 +424,8 @@ def getSecondDayIndex():
     table_matrix = getTableMatrix()
 
     # get the index
-    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
-    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)[0]
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)[1]
 
     return xIndex, yIndex
 
@@ -434,8 +437,8 @@ def getThirdDayIndex():
     table_matrix = getTableMatrix()
 
     # get the index
-    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
-    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)[0]
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)[1]
 
     return xIndex, yIndex
 
@@ -447,8 +450,8 @@ def getFourthDayIndex():
     table_matrix = getTableMatrix()
 
     # get the index
-    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)
-    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)
+    xIndex = getIndex(maxHumidity, maxTemp, table_matrix)[0]
+    yIndex = getIndex(maxHumidity, maxTemp, table_matrix)[1]
 
     return xIndex, yIndex
 
@@ -480,18 +483,18 @@ def runGraph():
     seconddayXIndex = getSecondDayIndex()[0]
     secondayYIndex = getSecondDayIndex()[1]
 
-    thirddayxIndex = getThirdDayIndex()[0]
-    thirddayyIndex = getThirdDayIndex()[1]
+   # thirddayxIndex = getThirdDayIndex()[0]
+   # thirddayyIndex = getThirdDayIndex()[1]
 
-    fourthdayxIndex = getFourthDayIndex()[0]
-    fourthdayyIndex = getFourthDayIndex()[1]
+   # fourthdayxIndex = getFourthDayIndex()[0]
+   # fourthdayyIndex = getFourthDayIndex()[1]
 
     #plot the indexes
-    # ax.scatter(currXIndex, currYIndex, color = 'black', linewidth = 10)
-    # ax.scatter(onedayXIndex, onedayYIndex, color = 'gray', linewidth = 10)
-    # ax.scatter(seconddayXIndex, secondayYIndex, color = 'gray', linewidth = 10)
-    # ax.scatter(thirddayxIndex, thirddayyIndex, color = 'gray', linewidth = 10)
-    # ax.scatter(fourthdayxIndex, fourthdayyIndex, color = 'gray', linewidth = 10)
+    ax.scatter(currXIndex, currYIndex, color = 'black', linewidth = 10)
+    ax.scatter(onedayXIndex, onedayYIndex, color = 'gray', linewidth = 10)
+    ax.scatter(seconddayXIndex, secondayYIndex, color = 'gray', linewidth = 10)
+    #ax.scatter(thirddayxIndex, thirddayyIndex, color = 'gray', linewidth = 10)
+    #ax.scatter(fourthdayxIndex, fourthdayyIndex, color = 'gray', linewidth = 10)
 
 
     # set up the axis and title
